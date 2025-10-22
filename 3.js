@@ -1,10 +1,10 @@
 const PRODUCTS = [
-  { id: 1, name: "18k Saudi Gold Vca/Onyx Necklace", price: 215, category: "accessories", description: "18 inches Chain/15mm pendant", images: ["onyx.jpg","onyx.jpg","images/necklace3.jpg"], video: "onyx.mp4", colors: [] },
-  { id: 2, name: "Sling Bag", price: 200, category: "bags", description: "Charles & Keith sling bag in stylish design.", images: ["charles & keith.jpg","charles & keith black.jpg","images/sunglass3.jpg"], video: "charles & keith.mp4", colors: ["#000000", "#d2b48c", "#8b4513"] },
-  { id: 3, name: "Escrow earrings by Chanel", price: 215, category: "accessories", description: "Chanel earrings embody timeless elegance.", images: ["chanel earrings.jpg","chanel earrings1.jpg","chanel earrings1.jpg"], video: "chanel.mp4", colors: [] },
-  { id: 4, name: "Michael Kors Women Watches", price: 500, category: "accessories", description: "Durable and stylish tote bag for everyday use.", images: ["michelle korks.jpg","michelle korks1.jpg","michelle korks2.jpg"], video: "videos/totebag.mp4", colors: ["#ffd700", "#c0c0c0"] },
-  { id: 5, name: "M88 Kogen Triple Action Kojic Soap", price: 40, category: "Beuty product", description: "M88 Kogen Triple Action Kojic Soap, 135g.", images: ["kogen.jpg","images/handbag2.jpg","images/handbag3.jpg"], video: "videos/handbag.mp4", colors: [] },
-  { id: 6, name: "Max diet", price: 300, category: "Beuty product", description: "Revolutionize your health regimen.", images: ["Max diet.jpg","images/backpack2.jpg","images/backpack3.jpg"], video: "videos/backpack.mp4", colors: [] }
+  { id: 1, name: "18k Saudi Gold Vca/Onyx Necklace", price: 215, category: "accessories", description: "18 inches Chain/15mm pendant", images: ["images/onyx.jpg", "images/onyx.jpg", "images/necklace3.jpg"], video: "onyx.mp4", colors: [] },
+  { id: 2, name: "Sling Bag", price: 200, category: "bags", description: "Charles & Keith sling bag in stylish design.", images: ["images/charles & keith.jpg", "images/charles & keith black.jpg", "images/sunglass3.jpg"], video: "charles & keith.mp4", colors: ["#000000", "#d2b48c", "#8b4513"] },
+  { id: 3, name: "Escrow earrings by Chanel", price: 215, category: "accessories", description: "Chanel earrings embody timeless elegance.", images: ["images/chanel earrings.jpg", "images/chanel earrings1.jpg", "images/chanel earrings1.jpg"], video: "chanel.mp4", colors: [] },
+  { id: 4, name: "Michael Kors Women Watches", price: 500, category: "accessories", description: "Durable and stylish tote bag for everyday use.", images: ["images/michelle korks.jpg", "images/michelle korks1.jpg", "images/michelle korks2.jpg"], video: "videos/totebag.mp4", colors: ["#ffd700", "#c0c0c0"] },
+  { id: 5, name: "M88 Kogen Triple Action Kojic Soap", price: 40, category: "Beuty product", description: "M88 Kogen Triple Action Kojic Soap, 135g.", images: ["images/kogen.jpg", "images/handbag2.jpg", "images/handbag3.jpg"], video: "videos/handbag.mp4", colors: [] },
+  { id: 6, name: "Max diet", price: 300, category: "Beuty product", description: "Revolutionize your health regimen.", images: ["images/Max diet.jpg", "images/backpack2.jpg", "images/backpack3.jpg"], video: "videos/backpack.mp4", colors: [] }
 ];
 
 let cart = [];
@@ -26,10 +26,9 @@ const flyAnimation = document.getElementById("fly-animation");
 const addCartSound = document.getElementById("add-cart-sound");
 const bgMusic = document.getElementById("bg-music");
 
-// Unlock audio on mobile
-document.body.addEventListener('click', () => { 
-  bgMusic.play().catch(()=>{}); 
-}, {once:true});
+document.body.addEventListener('click', () => {
+  bgMusic.play().catch(() => {});
+}, { once: true });
 
 function displayProducts(category = "all") {
   productsContainer.innerHTML = "";
@@ -83,7 +82,9 @@ function viewProduct(id) {
       };
       colorOptions.appendChild(circle);
     });
-  } else colorSection.classList.add("hidden");
+  } else {
+    colorSection.classList.add("hidden");
+  }
 
   document.getElementById("add-to-cart-view").onclick = () => addToCart(product.id, selectedColor, product.images[0]);
 }
@@ -102,7 +103,7 @@ function addToCart(id, color, image) {
   animateFly(image);
 
   addCartSound.currentTime = 0;
-  addCartSound.play().catch(()=>{});
+  addCartSound.play().catch(() => {});
 }
 
 function animateFly(imageSrc) {
@@ -154,7 +155,7 @@ function updateCart() {
   });
 
   cartTotal.textContent = `Total: AED ${total}`;
-  const totalQty = cart.reduce((sum,item)=>sum+item.qty,0);
+  const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
   cartCount.textContent = totalQty;
 
   document.querySelectorAll(".qty-btn").forEach(btn => btn.onclick = () => {
@@ -171,23 +172,24 @@ function updateCart() {
   });
 }
 
-function removeFromCart(id,color){
+function removeFromCart(id, color) {
   const key = color || "null";
-  cart = cart.filter(item => !(item.id===id && (item.color||"null")===key));
+  cart = cart.filter(item => !(item.id === id && (item.color || "null") === key));
   updateCart();
 }
 
-function changeQty(id, delta, color){
-  const item = cart.find(i=>i.id===id && (i.color||"null")=== (color||"null"));
-  if(!item) return;
+function changeQty(id, delta, color) {
+  const item = cart.find(i => i.id === id && (i.color || "null") === (color || "null"));
+  if (!item) return;
   item.qty += delta;
-  if(item.qty < 1) item.qty = 1;
+  if (item.qty < 1) item.qty = 1;
   updateCart();
 }
 
 cartBtn.onclick = () => cartSidebar.classList.add("show");
 closeCart.onclick = () => cartSidebar.classList.remove("show");
 
+// ✅ FIXED WhatsApp Checkout Function
 checkoutBtn.onclick = () => {
   if (cart.length === 0) {
     alert("Your cart is empty!");
@@ -196,7 +198,7 @@ checkoutBtn.onclick = () => {
 
   let msg = "Hello, my order:\n\n";
 
-  // Correct base URL for your GitHub Pages site
+  // Set correct base path for GitHub Pages (includes folder name)
   const baseUrl = `${window.location.origin}/getNbuy`;
 
   cart.forEach(item => {
@@ -207,16 +209,13 @@ checkoutBtn.onclick = () => {
   const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
   msg += `Total: AED ${total}\n\nName: `;
 
-  // Open WhatsApp chat
   window.open(`https://wa.me/971504238543?text=${encodeURIComponent(msg)}`, "_blank");
 };
 
-
 categoryBtns.forEach(btn => btn.addEventListener("click", () => {
-  document.querySelector(".category-btn.active").classList.remove("active");
+  document.querySelector(".category-btn.active")?.classList.remove("active");
   btn.classList.add("active");
   displayProducts(btn.dataset.category);
 }));
 
 displayProducts();
-
