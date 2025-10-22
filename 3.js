@@ -1,10 +1,10 @@
 const PRODUCTS = [
-  { id: 1, name: "18k Saudi Gold Vca/Onyx Necklace", price: 215, category: "accessories", description: "18 inches Chain/15mm pendant", images: ["images/onyx.jpg", "images/onyx.jpg", "images/necklace3.jpg"], video: "onyx.mp4", colors: [] },
-  { id: 2, name: "Sling Bag", price: 200, category: "bags", description: "Charles & Keith sling bag in stylish design.", images: ["images/charles & keith.jpg", "images/charles & keith black.jpg", "images/sunglass3.jpg"], video: "charles & keith.mp4", colors: ["#000000", "#d2b48c", "#8b4513"] },
-  { id: 3, name: "Escrow earrings by Chanel", price: 215, category: "accessories", description: "Chanel earrings embody timeless elegance.", images: ["images/chanel earrings.jpg", "images/chanel earrings1.jpg", "images/chanel earrings1.jpg"], video: "chanel.mp4", colors: [] },
-  { id: 4, name: "Michael Kors Women Watches", price: 500, category: "accessories", description: "Durable and stylish tote bag for everyday use.", images: ["images/michelle korks.jpg", "images/michelle korks1.jpg", "images/michelle korks2.jpg"], video: "videos/totebag.mp4", colors: ["#ffd700", "#c0c0c0"] },
-  { id: 5, name: "M88 Kogen Triple Action Kojic Soap", price: 40, category: "Beuty product", description: "M88 Kogen Triple Action Kojic Soap, 135g.", images: ["images/kogen.jpg", "images/handbag2.jpg", "images/handbag3.jpg"], video: "videos/handbag.mp4", colors: [] },
-  { id: 6, name: "Max diet", price: 300, category: "Beuty product", description: "Revolutionize your health regimen.", images: ["images/Max diet.jpg", "images/backpack2.jpg", "images/backpack3.jpg"], video: "videos/backpack.mp4", colors: [] }
+  { id: 1, name: "18k Saudi Gold Vca/Onyx Necklace", price: 215, category: "accessories", description: "18 inches Chain/15mm pendant", images: ["onyx.jpg","onyx.jpg","images/necklace3.jpg"], video: "onyx.mp4", colors: [] },
+  { id: 2, name: "Sling Bag", price: 200, category: "bags", description: "Charles & Keith sling bag in stylish design.", images: ["charles & keith.jpg","charles & keith black.jpg","images/sunglass3.jpg"], video: "charles & keith.mp4", colors: ["#000000", "#d2b48c", "#8b4513"] },
+  { id: 3, name: "Escrow earrings by Chanel", price: 215, category: "accessories", description: "Chanel earrings embody timeless elegance.", images: ["chanel earrings.jpg","chanel earrings1.jpg","chanel earrings1.jpg"], video: "chanel.mp4", colors: [] },
+  { id: 4, name: "Michael Kors Women Watches", price: 500, category: "accessories", description: "Durable and stylish tote bag for everyday use.", images: ["michelle korks.jpg","michelle korks1.jpg","michelle korks2.jpg"], video: "videos/totebag.mp4", colors: ["#ffd700", "#c0c0c0"] },
+  { id: 5, name: "M88 Kogen Triple Action Kojic Soap", price: 40, category: "Beuty product", description: "M88 Kogen Triple Action Kojic Soap, 135g.", images: ["kogen.jpg","images/handbag2.jpg","images/handbag3.jpg"], video: "videos/handbag.mp4", colors: [] },
+  { id: 6, name: "Max diet", price: 300, category: "Beuty product", description: "Revolutionize your health regimen.", images: ["Max diet.jpg","images/backpack2.jpg","images/backpack3.jpg"], video: "videos/backpack.mp4", colors: [] }
 ];
 
 let cart = [];
@@ -219,3 +219,4 @@ categoryBtns.forEach(btn => btn.addEventListener("click", () => {
 }));
 
 displayProducts();
+
