@@ -186,7 +186,7 @@ checkoutBtn.onclick = () => {
   let total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
   msg += `Total: AED ${total}\n\nName: `;
   const encoded = encodeURIComponent(msg);
-  window.open(`https://wa.me/9715011263728?text=${encoded}`, "_blank");
+  window.open(`https://wa.me/971504238543?text=${encoded}`, "_blank");
 };
 
 categoryBtns.forEach(btn => {
@@ -198,3 +198,4 @@ categoryBtns.forEach(btn => {
 });
 
 displayProducts();
+
