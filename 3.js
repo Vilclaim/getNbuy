@@ -189,13 +189,28 @@ cartBtn.onclick = () => cartSidebar.classList.add("show");
 closeCart.onclick = () => cartSidebar.classList.remove("show");
 
 checkoutBtn.onclick = () => {
-  if(cart.length===0){ alert("Your cart is empty!"); return; }
-  let msg="Hello, my order:\n\n";
-  cart.forEach(item => msg+=`${item.name} ${item.color ? `(Color: ${item.color})` : ''} x ${item.qty} = AED ${item.price*item.qty}\n${window.location.origin}/${item.images[0]}\n\n`);
-  const total = cart.reduce((sum,i)=>sum+i.price*i.qty,0);
-  msg+=`Total: AED ${total}\n\nName: `;
-  window.open(`https://wa.me/971504238543?text=${encodeURIComponent(msg)}`,"_blank");
+  if (cart.length === 0) {
+    alert("Your cart is empty!");
+    return;
+  }
+
+  let msg = "Hello, my order:\n\n";
+
+  // Correct base URL for your GitHub Pages site
+  const baseUrl = `${window.location.origin}/getNbuy`;
+
+  cart.forEach(item => {
+    const imageUrl = `${baseUrl}/${item.images[0]}`;
+    msg += `${item.name} ${item.color ? `(Color: ${item.color})` : ''} x ${item.qty} = AED ${item.price * item.qty}\n${imageUrl}\n\n`;
+  });
+
+  const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+  msg += `Total: AED ${total}\n\nName: `;
+
+  // Open WhatsApp chat
+  window.open(`https://wa.me/971504238543?text=${encodeURIComponent(msg)}`, "_blank");
 };
+
 
 categoryBtns.forEach(btn => btn.addEventListener("click", () => {
   document.querySelector(".category-btn.active").classList.remove("active");
@@ -204,3 +219,4 @@ categoryBtns.forEach(btn => btn.addEventListener("click", () => {
 }));
 
 displayProducts();
+
