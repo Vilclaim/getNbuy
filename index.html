@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GetNBuy</title>
+  <link rel="stylesheet" href="3.css" />
+</head>
+<body>
+  <header>
+    <img src="no bg.png" alt="GetNBuy Logo" id="logo">
+    <nav>
+      <button id="cart-btn">🛒 <span id="cart-count">0</span></button>
+    </nav>
+  </header>
+
+  <!-- Background Video -->
+  <video autoplay muted loop id="bg-video">
+    <source src="videos/bg-video.mp4" type="video/mp4">
+  </video>
+
+  <main>
+    <section id="categories">
+      <button class="category-btn active" data-category="all">All</button>
+      <button class="category-btn" data-category="accessories">Accessories</button>
+      <button class="category-btn" data-category="bags">Bags</button>
+      <button class="category-btn" data-category="Beuty product">Beauty product</button>
+    </section>
+
+    <section id="products" class="product-grid"></section>
+
+    <section id="product-view" class="hidden">
+      <div class="product-detail">
+        <button id="close-view">✕</button>
+        <h2 id="view-title"></h2>
+        <div class="media">
+          <img id="view-image1" src="" alt="">
+          <img id="view-image2" src="" alt="">
+          <img id="view-image3" src="" alt="">
+          <video id="view-video" controls></video>
+        </div>
+        <p id="view-description"></p>
+        <p id="view-price"></p>
+
+        <!-- ✅ Color Selection Section -->
+        <div id="color-section" class="hidden">
+          <p>Available Colors:</p>
+          <div id="color-options"></div>
+        </div>
+
+        <button id="add-to-cart-view">Add to Cart</button>
+      </div>
+    </section>
+
+    <aside id="cart" class="hidden">
+      <div class="cart-content">
+        <button id="close-cart">← Back</button>
+        <h2>Your Cart</h2>
+        <ul id="cart-items"></ul>
+        <p id="cart-total">Total: AED 0</p>
+        <button id="checkout">Proceed to Checkout</button>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Floating animation container -->
+  <div id="fly-animation"></div>
+
+  <script src="3.js"></script>
+</body>
+</html>
