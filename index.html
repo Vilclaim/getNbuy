@@ -7,6 +7,10 @@
   <link rel="stylesheet" href="3.css" />
 </head>
 <body>
+
+  <!-- Background Music -->
+  <audio id="bg-music" src="shopping-music.mp3" loop autoplay></audio>
+
   <header>
     <img src="no bg.png" alt="GetNBuy Logo" id="logo">
     <nav>
@@ -42,7 +46,6 @@
         <p id="view-description"></p>
         <p id="view-price"></p>
 
-        <!-- ✅ Color Selection Section -->
         <div id="color-section" class="hidden">
           <p>Available Colors:</p>
           <div id="color-options"></div>
@@ -65,6 +68,9 @@
 
   <!-- Floating animation container -->
   <div id="fly-animation"></div>
+
+  <!-- Add-to-cart sound -->
+  <audio id="add-cart-sound" src="add-to-cart.mp3"></audio>
 
   <script src="3.js"></script>
 </body>
