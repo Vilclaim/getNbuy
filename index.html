@@ -7,13 +7,14 @@
   <link rel="stylesheet" href="3.css" />
 </head>
 <body>
-
   <!-- Background Music -->
   <audio id="bg-music" src="shopping-music.mp3" loop autoplay></audio>
 
-  <header>
-    <img src="no bg.png" alt="GetNBuy Logo" id="logo">
-    <nav>
+  <header id="site-header">
+    <div class="header-left">
+      <img src="no bg.png" alt="GetNBuy Logo" id="logo">
+    </div>
+    <nav id="main-nav">
       <button id="cart-btn">🛒 <span id="cart-count">0</span></button>
     </nav>
   </header>
@@ -24,37 +25,52 @@
   </video>
 
   <main>
+    <!-- Category Buttons -->
     <section id="categories">
       <button class="category-btn active" data-category="all">All</button>
       <button class="category-btn" data-category="accessories">Accessories</button>
       <button class="category-btn" data-category="bags">Bags</button>
-      <button class="category-btn" data-category="Beuty product">Beauty product</button>
+      <button class="category-btn" data-category="Beuty product">Beauty Product</button>
     </section>
 
+    <!-- Product Grid -->
     <section id="products" class="product-grid"></section>
 
+    <!-- Product Detail Modal -->
     <section id="product-view" class="hidden">
       <div class="product-detail">
         <button id="close-view">✕</button>
         <h2 id="view-title"></h2>
         <div class="media">
-          <img id="view-image1" src="" alt="">
-          <img id="view-image2" src="" alt="">
-          <img id="view-image3" src="" alt="">
+          <img id="view-image1" src="" alt="Product Image 1" class="gallery-img">
+          <img id="view-image2" src="" alt="Product Image 2" class="gallery-img">
+          <img id="view-image3" src="" alt="Product Image 3" class="gallery-img">
           <video id="view-video" controls></video>
         </div>
+
+<!-- Product Image Gallery Modal -->
+<div id="gallery-viewer" class="hidden">
+  <span id="close-gallery">×</span>
+  <img id="gallery-image" src="" alt="Gallery View">
+  <button id="prev-gallery">◀</button>
+  <button id="next-gallery">▶</button>
+</div>
+
+
         <p id="view-description"></p>
         <p id="view-price"></p>
-
         <div id="color-section" class="hidden">
           <p>Available Colors:</p>
           <div id="color-options"></div>
         </div>
-
-        <button id="add-to-cart-view">Add to Cart</button>
+        <div class="view-buttons">
+          <button id="add-to-cart-view">🛒 Add to Cart</button>
+          <button id="cancel-view">✖ Cancel</button>
+        </div>
       </div>
     </section>
 
+    <!-- Cart Sidebar -->
     <aside id="cart" class="hidden">
       <div class="cart-content">
         <button id="close-cart">← Back</button>
@@ -66,10 +82,9 @@
     </aside>
   </main>
 
-  <!-- Floating animation container -->
+  <!-- Flying animation -->
   <div id="fly-animation"></div>
-
-  <!-- Add-to-cart sound -->
+  <!-- Add to cart sound -->
   <audio id="add-cart-sound" src="add-to-cart.mp3"></audio>
 
   <script src="3.js"></script>
