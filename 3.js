@@ -1,8 +1,13 @@
+// ======================
+// GETNBUY - FULL SHOP SCRIPT
+// ======================
+
+// PRODUCTS DATA
 const PRODUCTS = [
   { id: 1, name: "18k Saudi Gold Vca/Onyx Necklace", price: 215, category: "accessories", description: "18 inches Chain/15mm pendant", images: ["onyx.jpg","onyx.jpg","images/necklace3.jpg"], video: "onyx.mp4", colors: [] },
-  { id: 2, name: "Sling Bag", price: 200, category: "bags", description: "Charles & Keith sling bag in stylish design.", images: ["charles & keith.jpg","charles & keith black.jpg","images/sunglass3.jpg"], video: "charles & keith.mp4", colors: ["#000000", "#d2b48c", "#8b4513"] },
+  { id: 2, name: "Sling Bag", price: 200, category: "bags", description: "Charles & Keith sling bag in stylish design.", images: ["charles & keith.jpg","charles & keith black.jpg","images/sunglass3.jpg"], video: "charles & keith.mp4", colors: ["Black","Beige","Brown"] },
   { id: 3, name: "Escrow earrings by Chanel", price: 215, category: "accessories", description: "Chanel earrings embody timeless elegance.", images: ["chanel earrings.jpg","chanel earrings1.jpg","chanel earrings1.jpg"], video: "chanel.mp4", colors: [] },
-  { id: 4, name: "Michael Kors Women Watches", price: 500, category: "accessories", description: "Durable and stylish tote bag for everyday use.", images: ["michelle korks.jpg","michelle korks1.jpg","michelle korks2.jpg"], video: "videos/totebag.mp4", colors: ["#ffd700", "#c0c0c0"] },
+  { id: 4, name: "Michael Kors Women Watches", price: 500, category: "accessories", description: "Durable and stylish tote bag for everyday use.", images: ["michelle korks.jpg","michelle korks1.jpg","michelle korks2.jpg"], video: "videos/totebag.mp4", colors: ["Gold","Silver"] },
   { id: 5, name: "M88 Kogen Triple Action Kojic Soap", price: 40, category: "Beuty product", description: "M88 Kogen Triple Action Kojic Soap, 135g.", images: ["kogen.jpg","images/handbag2.jpg","images/handbag3.jpg"], video: "videos/handbag.mp4", colors: [] },
   { id: 6, name: "Max diet", price: 300, category: "Beuty product", description: "Revolutionize your health regimen.", images: ["Max diet.jpg","images/backpack2.jpg","images/backpack3.jpg"], video: "videos/backpack.mp4", colors: [] }
 ];
@@ -10,6 +15,7 @@ const PRODUCTS = [
 let cart = [];
 let selectedColor = null;
 
+// DOM REFERENCES
 const productsContainer = document.getElementById("products");
 const cartBtn = document.getElementById("cart-btn");
 const cartSidebar = document.getElementById("cart");
@@ -22,201 +28,245 @@ const categoryBtns = document.querySelectorAll(".category-btn");
 const colorSection = document.getElementById("color-section");
 const colorOptions = document.getElementById("color-options");
 const flyAnimation = document.getElementById("fly-animation");
-
 const addCartSound = document.getElementById("add-cart-sound");
 const bgMusic = document.getElementById("bg-music");
 
-document.body.addEventListener('click', () => {
-  bgMusic.play().catch(() => {});
-}, { once: true });
+// PRODUCT VIEW MODAL
+const productView = document.getElementById("product-view");
+const viewTitle = document.getElementById("view-title");
+const viewDescription = document.getElementById("view-description");
+const viewPrice = document.getElementById("view-price");
+const viewImage1 = document.getElementById("view-image1");
+const viewImage2 = document.getElementById("view-image2");
+const viewImage3 = document.getElementById("view-image3");
+const viewVideo = document.getElementById("view-video");
+const closeView = document.getElementById("close-view");
+const cancelView = document.getElementById("cancel-view");
+const addToCartView = document.getElementById("add-to-cart-view");
 
+// GALLERY VIEWER
+const galleryViewer = document.getElementById("gallery-viewer");
+const galleryImage = document.getElementById("gallery-image");
+const closeGallery = document.getElementById("close-gallery");
+const prevGallery = document.getElementById("prev-gallery");
+const nextGallery = document.getElementById("next-gallery");
+let galleryImages = [];
+let galleryIndex = 0;
+
+// ======================
+// INITIAL SETUP
+// ======================
+document.body.addEventListener("click", () => bgMusic.play().catch(() => {}), { once: true });
+displayProducts();
+
+// ======================
+// DISPLAY PRODUCTS
+// ======================
 function displayProducts(category = "all") {
   productsContainer.innerHTML = "";
   const filtered = category === "all" ? PRODUCTS : PRODUCTS.filter(p => p.category === category);
   filtered.forEach(p => {
     const div = document.createElement("div");
-    div.classList.add("product");
+    div.className = "product";
     div.innerHTML = `
       <img src="${p.images[0]}" alt="${p.name}">
       <h3>${p.name}</h3>
       <p>AED ${p.price}</p>
       <button class="view-btn" data-id="${p.id}">View</button>
-      <button class="add-btn" data-id="${p.id}" data-color="">Add to Cart</button>
+      <button class="add-btn" data-id="${p.id}">Add to Cart</button>
     `;
     productsContainer.appendChild(div);
   });
 
-  document.querySelectorAll(".view-btn").forEach(btn => btn.onclick = () => viewProduct(Number(btn.dataset.id)));
-  document.querySelectorAll(".add-btn").forEach(btn => btn.onclick = () => {
-    const id = Number(btn.dataset.id);
-    const color = btn.dataset.color || null;
-    const product = PRODUCTS.find(p => p.id === id);
-    addToCart(id, color, product.images[0]);
+  // Attach event listeners
+  document.querySelectorAll(".view-btn").forEach(btn => {
+    btn.addEventListener("click", () => viewProduct(+btn.dataset.id));
+  });
+  document.querySelectorAll(".add-btn").forEach(btn => {
+    btn.addEventListener("click", e => {
+      const product = PRODUCTS.find(p => p.id === +btn.dataset.id);
+      if (product.colors.length > 0) { viewProduct(product.id); return; }
+      addToCart(product.id, null, product.images[0], e);
+    });
   });
 }
 
+// ======================
+// VIEW PRODUCT DETAILS
+// ======================
 function viewProduct(id) {
   const product = PRODUCTS.find(p => p.id === id);
-  document.getElementById("product-view").classList.remove("hidden");
-  document.getElementById("view-title").textContent = product.name;
-  document.getElementById("view-description").textContent = product.description;
-  document.getElementById("view-price").textContent = "AED " + product.price;
-  document.getElementById("view-image1").src = product.images[0];
-  document.getElementById("view-image2").src = product.images[1];
-  document.getElementById("view-image3").src = product.images[2];
-  document.getElementById("view-video").src = product.video;
+  productView.classList.remove("hidden");
 
+  viewTitle.textContent = product.name;
+  viewDescription.textContent = product.description;
+  viewPrice.textContent = `AED ${product.price}`;
+  viewImage1.src = product.images[0];
+  viewImage2.src = product.images[1];
+  viewImage3.src = product.images[2];
+  viewVideo.src = product.video;
+
+  // COLORS
   colorOptions.innerHTML = "";
   selectedColor = null;
-
   if (product.colors.length > 0) {
     colorSection.classList.remove("hidden");
     product.colors.forEach(color => {
-      const circle = document.createElement("div");
-      circle.classList.add("color-circle");
-      circle.style.background = color;
-      circle.onclick = () => {
-        document.querySelectorAll(".color-circle").forEach(c => c.classList.remove("selected"));
-        circle.classList.add("selected");
+      const opt = document.createElement("div");
+      opt.className = "color-option";
+      opt.innerHTML = `<div class="color-circle" style="background:${color.toLowerCase()};"></div>${color}`;
+      opt.onclick = () => {
+        document.querySelectorAll(".color-option").forEach(o => o.classList.remove("selected"));
+        opt.classList.add("selected");
         selectedColor = color;
       };
-      colorOptions.appendChild(circle);
+      colorOptions.appendChild(opt);
     });
-  } else {
-    colorSection.classList.add("hidden");
-  }
+  } else colorSection.classList.add("hidden");
 
-  document.getElementById("add-to-cart-view").onclick = () => addToCart(product.id, selectedColor, product.images[0]);
+  // ADD TO CART
+  addToCartView.onclick = e => {
+    if (product.colors.length > 0 && !selectedColor) { alert("Please select a color first!"); return; }
+    addToCart(product.id, selectedColor, product.images[0], e);
+    productView.classList.add("hidden");
+  };
+
+  // GALLERY CLICK
+  const modalImages = [viewImage1, viewImage2, viewImage3];
+  modalImages.forEach((img, i) => {
+    img.onclick = () => {
+      galleryImages = product.images;
+      galleryIndex = i;
+      galleryImage.src = galleryImages[galleryIndex];
+      galleryViewer.classList.remove("hidden");
+    };
+  });
 }
 
-document.getElementById("close-view").onclick = () => document.getElementById("product-view").classList.add("hidden");
+// CLOSE MODAL
+closeView.onclick = cancelView.onclick = () => productView.classList.add("hidden");
 
-function addToCart(id, color, image) {
+// ======================
+// ADD TO CART WITH FLYING ANIMATION
+// ======================
+function addToCart(id, color, image, e) {
   const product = PRODUCTS.find(p => p.id === id);
-  const key = (color || "null");
-  const existing = cart.find(item => item.id === id && (item.color || "null") === key);
-
-  if (existing) existing.qty++;
-  else cart.push({ ...product, qty: 1, color: color });
+  const keyColor = color || "none";
+  const existing = cart.find(i => i.id === id && (i.color || "none") === keyColor);
+  if (existing) existing.qty++; else cart.push({ ...product, color, qty: 1 });
 
   updateCart();
-  animateFly(image);
+  animateFly(image, e);
 
   addCartSound.currentTime = 0;
   addCartSound.play().catch(() => {});
 }
 
-function animateFly(imageSrc) {
-  const cartRect = cartBtn.getBoundingClientRect();
+// FLYING ANIMATION
+function animateFly(imgSrc, e) {
   const img = document.createElement("img");
-  img.src = imageSrc;
+  img.src = imgSrc;
   flyAnimation.appendChild(img);
 
-  const startX = window.event ? window.event.clientX - 30 : 50;
-  const startY = window.event ? window.event.clientY - 30 : 200;
-  img.style.left = startX + 'px';
-  img.style.top = startY + 'px';
-  img.style.position = 'fixed';
+  const rect = cartBtn.getBoundingClientRect();
+  img.style.left = e.clientX + "px";
+  img.style.top = e.clientY + "px";
 
   setTimeout(() => {
-    img.style.transition = 'all 0.8s cubic-bezier(0.65,-0.25,0.35,1.25)';
-    img.style.left = cartRect.left + 'px';
-    img.style.top = cartRect.top + 'px';
-    img.style.transform = 'scale(0.2)';
-    img.style.opacity = '0';
+    img.style.left = rect.left + "px";
+    img.style.top = rect.top + "px";
+    img.style.transform = "scale(0.1)";
+    img.style.opacity = "0";
   }, 10);
 
-  setTimeout(() => img.remove(), 800);
+  setTimeout(() => img.remove(), 900);
 
-  cartCount.style.animation = 'popBadge 0.3s';
-  cartCount.addEventListener('animationend', () => cartCount.style.animation = '');
+  cartCount.style.animation = "popBadge 0.3s";
+  cartCount.addEventListener("animationend", () => cartCount.style.animation = "");
 }
 
+// ======================
+// UPDATE CART SIDEBAR
+// ======================
 function updateCart() {
   cartItems.innerHTML = "";
   let total = 0;
-
   cart.forEach(item => {
     total += item.price * item.qty;
     const li = document.createElement("li");
     li.innerHTML = `
       <div style="display:flex;align-items:center;gap:10px;">
         <img src="${item.images[0]}" alt="${item.name}">
-        <span>${item.name} ${item.color ? `<span style="background:${item.color};border:1px solid #fff;padding:3px 8px;border-radius:5px;"></span>` : ''} - AED ${item.price * item.qty}</span>
+        <span>${item.name} ${item.color ? `(${item.color})` : ""}</span>
       </div>
-      <div class="cart-item-qty">
-        <button class="qty-btn" data-id="${item.id}" data-color="${item.color || ''}" data-delta="-1">-</button>
+      <div>
+        <button class="qty-btn" data-id="${item.id}" data-color="${item.color || ""}" data-delta="-1">-</button>
         <span>${item.qty}</span>
-        <button class="qty-btn" data-id="${item.id}" data-color="${item.color || ''}" data-delta="1">+</button>
-        <button class="remove-btn" data-id="${item.id}" data-color="${item.color || ''}">Remove</button>
+        <button class="qty-btn" data-id="${item.id}" data-color="${item.color || ""}" data-delta="1">+</button>
+        <button class="remove-btn" data-id="${item.id}" data-color="${item.color || ""}">x</button>
       </div>
     `;
     cartItems.appendChild(li);
   });
 
   cartTotal.textContent = `Total: AED ${total}`;
-  const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-  cartCount.textContent = totalQty;
+  cartCount.textContent = cart.reduce((sum, i) => sum + i.qty, 0);
 
-  document.querySelectorAll(".qty-btn").forEach(btn => btn.onclick = () => {
-    const id = Number(btn.dataset.id);
-    const color = btn.dataset.color || null;
-    const delta = Number(btn.dataset.delta);
-    changeQty(id, delta, color);
-  });
+  document.querySelectorAll(".qty-btn").forEach(btn => btn.addEventListener("click", () => {
+    const id = +btn.dataset.id, delta = +btn.dataset.delta, color = btn.dataset.color || null;
+    const item = cart.find(i => i.id === id && (i.color || "none") === (color || "none"));
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty < 1) item.qty = 1;
+    updateCart();
+  }));
 
-  document.querySelectorAll(".remove-btn").forEach(btn => btn.onclick = () => {
-    const id = Number(btn.dataset.id);
-    const color = btn.dataset.color || null;
-    removeFromCart(id, color);
-  });
+  document.querySelectorAll(".remove-btn").forEach(btn => btn.addEventListener("click", () => {
+    const id = +btn.dataset.id, color = btn.dataset.color || null;
+    cart = cart.filter(i => !(i.id === id && (i.color || "none") === (color || "none")));
+    updateCart();
+  }));
 }
 
-function removeFromCart(id, color) {
-  const key = color || "null";
-  cart = cart.filter(item => !(item.id === id && (item.color || "null") === key));
-  updateCart();
-}
-
-function changeQty(id, delta, color) {
-  const item = cart.find(i => i.id === id && (i.color || "null") === (color || "null"));
-  if (!item) return;
-  item.qty += delta;
-  if (item.qty < 1) item.qty = 1;
-  updateCart();
-}
-
+// ======================
+// CART SIDEBAR CONTROL
+// ======================
 cartBtn.onclick = () => cartSidebar.classList.add("show");
 closeCart.onclick = () => cartSidebar.classList.remove("show");
 
-// ✅ FIXED WhatsApp Checkout Function
+// ======================
+// CHECKOUT VIA WHATSAPP
+// ======================
 checkoutBtn.onclick = () => {
-  if (cart.length === 0) {
-    alert("Your cart is empty!");
-    return;
-  }
-
-  let msg = "Hello, my order:\n\n";
-
-  // Set correct base path for GitHub Pages (includes folder name)
-  const baseUrl = `${window.location.origin}/getNbuy`;
-
-  cart.forEach(item => {
-    const imageUrl = `${baseUrl}/${item.images[0]}`;
-    msg += `${item.name} ${item.color ? `(Color: ${item.color})` : ''} x ${item.qty} = AED ${item.price * item.qty}\n${imageUrl}\n\n`;
-  });
-
-  const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
-  msg += `Total: AED ${total}\n\nName: `;
-
+  if (cart.length === 0) { alert("Your cart is empty!"); return; }
+  let msg = "🛍️ *My GetNBuy Order:*\n\n";
+  cart.forEach(i => { msg += `• ${i.name}${i.color ? ` (${i.color})` : ""} x ${i.qty} = AED ${i.price * i.qty}\n\n`; });
+  const total = cart.reduce((sum, i) => sum + i.price*i.qty, 0);
+  msg += `*Total:* AED ${total}\n\nName: `;
   window.open(`https://wa.me/971504238543?text=${encodeURIComponent(msg)}`, "_blank");
 };
 
+// ======================
+// CATEGORY FILTER
+// ======================
 categoryBtns.forEach(btn => btn.addEventListener("click", () => {
   document.querySelector(".category-btn.active")?.classList.remove("active");
   btn.classList.add("active");
   displayProducts(btn.dataset.category);
 }));
 
-displayProducts();
-
+// ======================
+// GALLERY NAVIGATION
+// ======================
+closeGallery.onclick = () => galleryViewer.classList.add("hidden");
+prevGallery.onclick = () => {
+  galleryIndex = (galleryIndex - 1 + galleryImages.length) % galleryImages.length;
+  galleryImage.src = galleryImages[galleryIndex];
+};
+nextGallery.onclick = () => {
+  galleryIndex = (galleryIndex + 1) % galleryImages.length;
+  galleryImage.src = galleryImages[galleryIndex];
+};
+galleryViewer.addEventListener("click", (e) => {
+  if (e.target === galleryViewer) galleryViewer.classList.add("hidden");
+});
