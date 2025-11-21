@@ -3,19 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GetNBuy</title>
+  <title>Get&Buy • Online Shop</title>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="no bg.png">
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Main CSS -->
   <link rel="stylesheet" href="3.css" />
 </head>
 <body>
   <!-- Background Music -->
   <audio id="bg-music" src="shopping-music.mp3" loop autoplay></audio>
 
+  <!-- HEADER -->
   <header id="site-header">
     <div class="header-left">
-      <img src="no bg.png" alt="GetNBuy Logo" id="logo">
+      <img src="no bg.png" alt="Get&Buy Logo" id="logo">
+      <div class="brand-block">
+        <span class="brand-name">Get&Buy</span>
+        <span class="brand-tagline">Luxury • Bags • Accessories • Beauty</span>
+      </div>
     </div>
-    <nav id="main-nav">
-      <button id="cart-btn">🛒 <span id="cart-count">0</span></button>
+
+    <div class="header-center">
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Search in Get&Buy (bags, perfume, accessories...)" />
+        <button id="search-btn"><i class="fa fa-search"></i></button>
+      </div>
+    </div>
+
+    <nav id="main-nav" class="header-right">
+      <button id="cart-btn">
+        <i class="fa fa-shopping-cart"></i>
+        <span>Cart</span>
+        <span id="cart-count">0</span>
+      </button>
     </nav>
   </header>
 
@@ -25,68 +52,107 @@
   </video>
 
   <main>
+    <!-- HERO / BANNER LIKE LAZADA -->
+    <section id="hero">
+      <div class="hero-content">
+        <div class="hero-text">
+          <h1>Welcome to <span>Get&Buy</span></h1>
+          <p>Your online shop for premium <strong>bags, accessories &amp; beauty products</strong>.
+             Fast delivery across Dubai.</p>
+          <div class="hero-badges">
+            <span class="badge hot">🔥 Hot Deals</span>
+            <span class="badge new">✨ New Arrival</span>
+            <span class="badge secure"><i class="fa fa-shield"></i> Secure Order via WhatsApp</span>
+          </div>
+        </div>
+        <div class="hero-card">
+          <p class="hero-label">Today’s Highlight</p>
+          <p class="hero-highlight">Up to <span>30% OFF</span> on selected items</p>
+          <p class="hero-sub">Tap on a product below to view details &amp; checkout via WhatsApp.</p>
+        </div>
+      </div>
+    </section>
+
     <!-- Category Buttons -->
     <section id="categories">
-      <button class="category-btn active" data-category="all">All</button>
-      <button class="category-btn" data-category="accessories">Accessories</button>
-      <button class="category-btn" data-category="bags">Bags</button>
-      <button class="category-btn" data-category="Beuty product">Beauty Product</button>
+      <button class="category-btn active" data-category="all">
+        <i class="fa fa-grid-2"></i> All
+      </button>
+      <button class="category-btn" data-category="accessories">
+        <i class="fa fa-gem"></i> Accessories
+      </button>
+      <button class="category-btn" data-category="bags">
+        <i class="fa fa-bag-shopping"></i> Bags
+      </button>
+      <button class="category-btn" data-category="Beuty product">
+        <i class="fa fa-spray-can-sparkles"></i> Beauty Product
+      </button>
     </section>
 
     <!-- Product Grid -->
     <section id="products" class="product-grid"></section>
 
-    <!-- Product Detail Modal -->
+    <!-- Lazada-style Product Detail Modal -->
     <section id="product-view" class="hidden">
-      <div class="product-detail">
-        <button id="close-view">✕</button>
-        <h2 id="view-title"></h2>
-        <div class="media">
-          <img id="view-image1" src="" alt="Product Image 1" class="gallery-img">
-          <img id="view-image2" src="" alt="Product Image 2" class="gallery-img">
-          <img id="view-image3" src="" alt="Product Image 3" class="gallery-img">
-          <video id="view-video" controls></video>
+      <div class="product-detail lazada-modal">
+        <button id="close-view" class="close-view-btn">✕</button>
+
+        <div class="modal-left">
+          <img id="modal-main-image" class="main-preview" src="" alt="Main Image">
+
+          <div class="thumbnail-row">
+            <img id="thumb-0" class="thumb" src="" alt="Thumb 1">
+            <img id="thumb-1" class="thumb" src="" alt="Thumb 2">
+            <img id="thumb-2" class="thumb" src="" alt="Thumb 3">
+            <video id="thumb-video" class="thumb" muted></video>
+          </div>
         </div>
 
-<!-- Product Image Gallery Modal -->
-<div id="gallery-viewer" class="hidden">
-  <span id="close-gallery">×</span>
-  <img id="gallery-image" src="" alt="Gallery View">
-  <button id="prev-gallery">◀</button>
-  <button id="next-gallery">▶</button>
-</div>
+        <div class="modal-right">
+          <h2 id="view-title" class="modal-title"></h2>
+          <p id="view-price" class="modal-price"></p>
+          <p id="view-description" class="modal-description"></p>
 
+          <div id="color-section" class="color-wrapper hidden">
+            <p class="color-label">Color Family:</p>
+            <div id="color-options" class="color-options"></div>
+          </div>
 
-        <p id="view-description"></p>
-        <p id="view-price"></p>
-        <div id="color-section" class="hidden">
-          <p>Available Colors:</p>
-          <div id="color-options"></div>
-        </div>
-        <div class="view-buttons">
-          <button id="add-to-cart-view">🛒 Add to Cart</button>
-          <button id="cancel-view">✖ Cancel</button>
+          <div class="qty-wrapper">
+            <p>Quantity:</p>
+            <div class="qty-box">
+              <button class="qty-control" id="qty-minus">–</button>
+              <span id="qty-count">1</span>
+              <button class="qty-control" id="qty-plus">+</button>
+            </div>
+          </div>
+
+          <button id="add-to-cart-view" class="buy-now-btn">
+            <i class="fa fa-shopping-cart"></i> Add to Cart
+          </button>
         </div>
       </div>
     </section>
 
     <!-- Cart Sidebar -->
-    <aside id="cart" class="hidden">
+    <aside id="cart">
       <div class="cart-content">
         <button id="close-cart">← Back</button>
         <h2>Your Cart</h2>
         <ul id="cart-items"></ul>
         <p id="cart-total">Total: AED 0</p>
-        <button id="checkout">Proceed to Checkout</button>
+        <button id="checkout"><i class="fa fa-whatsapp"></i> Proceed to Checkout</button>
       </div>
     </aside>
   </main>
 
   <!-- Flying animation -->
   <div id="fly-animation"></div>
+
   <!-- Add to cart sound -->
   <audio id="add-cart-sound" src="add-to-cart.mp3"></audio>
 
+  <!-- JS -->
   <script src="3.js"></script>
 </body>
 </html>
