@@ -1,8 +1,10 @@
-// ======================
-// GET&BUY - FULL SHOP SCRIPT 
-// ======================
+// =======================================================
+// GET&BUY FULL SHOP SYSTEM WITH FLASH DEALS + RETURN TO FLASH
+// =======================================================
 
+// ======================
 // PRODUCTS DATA
+// ======================
 const PRODUCTS = [
   {
     id: 1,
@@ -49,7 +51,7 @@ const PRODUCTS = [
     name: "M88 Kogen Triple Action Kojic Soap",
     price: 40,
     category: "Beuty product",
-    description: "M88 Kogen Triple Action Kojic Soap, 135g — whitening & glowing effect.",
+    description: "Kogen Kojic Soap, 135g — whitening & glowing effect.",
     images: ["kogen.jpg", "images/handbag2.jpg", "images/handbag3.jpg"],
     video: "videos/handbag.mp4",
     colors: []
@@ -66,14 +68,19 @@ const PRODUCTS = [
   }
 ];
 
+// ======================
 // STATE
+// ======================
 let cart = [];
 let selectedColor = null;
 let currentCategory = "all";
 let currentSearch = "";
 let modalQuantity = 1;
+let cameFromFlash = false; // ⭐ NEW FLAG
 
+// ======================
 // DOM REFERENCES
+// ======================
 const productsContainer = document.getElementById("products");
 const cartBtn = document.getElementById("cart-btn");
 const cartSidebar = document.getElementById("cart");
@@ -83,17 +90,16 @@ const cartCount = document.getElementById("cart-count");
 const checkoutBtn = document.getElementById("checkout");
 const closeCart = document.getElementById("close-cart");
 const categoryBtns = document.querySelectorAll(".category-btn");
-const colorSection = document.getElementById("color-section");
-const colorOptions = document.getElementById("color-options");
-const flyAnimation = document.getElementById("fly-animation");
-const addCartSound = document.getElementById("add-cart-sound");
-const bgMusic = document.getElementById("bg-music");
 
-// SEARCH
+const bgMusic = document.getElementById("bg-music");
+const addCartSound = document.getElementById("add-cart-sound");
+const flyAnimation = document.getElementById("fly-animation");
+
+// Search
 const searchInput = document.getElementById("search-input");
 const searchBtn = document.getElementById("search-btn");
 
-// MODAL
+// Product modal
 const productView = document.getElementById("product-view");
 const viewTitle = document.getElementById("view-title");
 const viewDescription = document.getElementById("view-description");
@@ -107,26 +113,31 @@ const thumb1 = document.getElementById("thumb-1");
 const thumb2 = document.getElementById("thumb-2");
 const thumbVideo = document.getElementById("thumb-video");
 
+// Qty modal
 const qtyMinus = document.getElementById("qty-minus");
 const qtyPlus = document.getElementById("qty-plus");
 const qtyCount = document.getElementById("qty-count");
 
+const colorSection = document.getElementById("color-section");
+const colorOptions = document.getElementById("color-options");
+
+// Flash sale
+const superSaleModal = document.getElementById("super-sale-modal");
+const flashSaleGrid = document.getElementById("flash-sale-grid");
+const openSuperSaleBtn = document.getElementById("open-super-sale");
+const closeSuperSale = document.getElementById("close-super-sale");
+
 // ======================
 // INITIAL SETUP
 // ======================
+document.body.addEventListener("click", () => {
+  bgMusic.play().catch(() => {});
+}, { once: true });
 
-// Try to play background music after first click
-document.body.addEventListener(
-  "click",
-  () => bgMusic.play().catch(() => {}),
-  { once: true }
-);
-
-// First render
 displayProducts();
 
 // ======================
-// DISPLAY PRODUCTS (CATEGORY + SEARCH)
+// DISPLAY PRODUCTS
 // ======================
 function displayProducts(category = "all", searchTerm = "") {
   currentCategory = category;
@@ -157,27 +168,26 @@ function displayProducts(category = "all", searchTerm = "") {
     productsContainer.appendChild(div);
   });
 
-  // Attach event listeners
-  document.querySelectorAll(".view-btn").forEach((btn) => {
-    btn.addEventListener("click", () => viewProduct(+btn.dataset.id));
-  });
-  document.querySelectorAll(".add-btn").forEach((btn) => {
+  document.querySelectorAll(".view-btn").forEach((btn) =>
+    btn.addEventListener("click", () => viewProduct(+btn.dataset.id))
+  );
+
+  document.querySelectorAll(".add-btn").forEach((btn) =>
     btn.addEventListener("click", (e) => {
       const product = PRODUCTS.find((p) => p.id === +btn.dataset.id);
       if (!product) return;
 
-      // If has colors, open modal instead
-      if (product.colors && product.colors.length > 0) {
+      if (product.colors.length > 0) {
         viewProduct(product.id);
         return;
       }
       addToCart(product.id, null, product.images[0], e);
-    });
-  });
+    })
+  );
 }
 
 // ======================
-// VIEW PRODUCT (LAZADA MODAL)
+// VIEW PRODUCT MODAL
 // ======================
 function viewProduct(id) {
   const p = PRODUCTS.find((item) => item.id === id);
@@ -185,23 +195,19 @@ function viewProduct(id) {
 
   productView.classList.remove("hidden");
 
-  // Reset quantity
   modalQuantity = 1;
   qtyCount.textContent = "1";
 
-  // Text
   viewTitle.textContent = p.name;
   viewDescription.textContent = p.description;
   viewPrice.textContent = `AED ${p.price}`;
 
-  // Images
   modalMainImage.src = p.images[0];
   thumb0.src = p.images[0];
   thumb1.src = p.images[1];
   thumb2.src = p.images[2];
   thumbVideo.src = p.video;
 
-  // Thumbnails click logic
   thumb0.onclick = () => {
     modalMainImage.src = p.images[0];
     modalMainImage.style.display = "block";
@@ -214,34 +220,32 @@ function viewProduct(id) {
     modalMainImage.src = p.images[2];
     modalMainImage.style.display = "block";
   };
+
   thumbVideo.onclick = () => {
-    // Show video in place of image
     modalMainImage.style.display = "none";
     const videoEl = document.createElement("video");
     videoEl.src = p.video;
     videoEl.controls = true;
     videoEl.autoplay = true;
     videoEl.className = "main-preview";
-    // Remove any previous video
+
     const oldVid = document.querySelector(".modal-left video.main-preview");
     if (oldVid) oldVid.remove();
+
     document.querySelector(".modal-left").appendChild(videoEl);
   };
 
-  // Color options
   colorOptions.innerHTML = "";
   selectedColor = null;
 
-  if (p.colors && p.colors.length > 0) {
+  if (p.colors.length > 0) {
     colorSection.classList.remove("hidden");
     p.colors.forEach((color) => {
       const opt = document.createElement("div");
       opt.className = "color-option";
       opt.textContent = color;
       opt.onclick = () => {
-        document
-          .querySelectorAll(".color-option")
-          .forEach((o) => o.classList.remove("selected"));
+        document.querySelectorAll(".color-option").forEach((o) => o.classList.remove("selected"));
         opt.classList.add("selected");
         selectedColor = color;
       };
@@ -251,9 +255,8 @@ function viewProduct(id) {
     colorSection.classList.add("hidden");
   }
 
-  // Add to cart from modal
   addToCartView.onclick = (e) => {
-    if (p.colors && p.colors.length > 0 && !selectedColor) {
+    if (p.colors.length > 0 && !selectedColor) {
       alert("Please select a color first!");
       return;
     }
@@ -263,39 +266,44 @@ function viewProduct(id) {
 }
 
 // ======================
-// MODAL QUANTITY CONTROL
-// ======================
-qtyMinus.onclick = () => {
-  if (modalQuantity > 1) {
-    modalQuantity--;
-    qtyCount.textContent = String(modalQuantity);
-  }
-};
-qtyPlus.onclick = () => {
-  modalQuantity++;
-  qtyCount.textContent = String(modalQuantity);
-};
-
-// ======================
-// CLOSE MODAL
+// CLOSE PRODUCT MODAL (⭐ UPDATED)
 // ======================
 function closeModal() {
   productView.classList.add("hidden");
-  // remove any video used as main preview
+
   const vid = document.querySelector(".modal-left video.main-preview");
   if (vid) vid.remove();
   modalMainImage.style.display = "block";
+
+  // ⭐ If opened from Flash Deals → return to Flash Deals
+  if (cameFromFlash) {
+    cameFromFlash = false;
+    superSaleModal.classList.remove("hidden");
+  }
 }
 
 closeView.onclick = closeModal;
 
-// close when clicking outside the card
 productView.addEventListener("click", (e) => {
   if (e.target === productView) closeModal();
 });
 
 // ======================
-// ADD TO CART + FLY ANIMATION
+// QUANTITY
+// ======================
+qtyMinus.onclick = () => {
+  if (modalQuantity > 1) {
+    modalQuantity--;
+    qtyCount.textContent = modalQuantity;
+  }
+};
+qtyPlus.onclick = () => {
+  modalQuantity++;
+  qtyCount.textContent = modalQuantity;
+};
+
+// ======================
+// ADD TO CART
 // ======================
 function addToCart(id, color, image, e, qty = 1) {
   const product = PRODUCTS.find((p) => p.id === id);
@@ -316,6 +324,9 @@ function addToCart(id, color, image, e, qty = 1) {
   addCartSound.play().catch(() => {});
 }
 
+// ======================
+// ADD FLY ANIMATION
+// ======================
 function animateFly(imgSrc, e) {
   const img = document.createElement("img");
   img.src = imgSrc;
@@ -338,17 +349,13 @@ function animateFly(imgSrc, e) {
   setTimeout(() => img.remove(), 900);
 
   cartCount.style.animation = "popBadge 0.3s";
-  cartCount.addEventListener(
-    "animationend",
-    () => {
-      cartCount.style.animation = "";
-    },
-    { once: true }
-  );
+  cartCount.addEventListener("animationend", () => {
+    cartCount.style.animation = "";
+  }, { once: true });
 }
 
 // ======================
-// UPDATE CART SIDEBAR
+// UPDATE CART
 // ======================
 function updateCart() {
   cartItems.innerHTML = "";
@@ -356,6 +363,7 @@ function updateCart() {
 
   cart.forEach((item) => {
     total += item.price * item.qty;
+
     const li = document.createElement("li");
     li.innerHTML = `
       <div style="display:flex;align-items:center;gap:10px;">
@@ -375,23 +383,23 @@ function updateCart() {
   cartTotal.textContent = `Total: AED ${total}`;
   cartCount.textContent = cart.reduce((sum, i) => sum + i.qty, 0);
 
-  // quantity buttons
   document.querySelectorAll(".qty-btn").forEach((btn) =>
     btn.addEventListener("click", () => {
       const id = +btn.dataset.id;
       const delta = +btn.dataset.delta;
       const color = btn.dataset.color || null;
+
       const item = cart.find(
         (i) => i.id === id && (i.color || "none") === (color || "none")
       );
       if (!item) return;
+
       item.qty += delta;
       if (item.qty < 1) item.qty = 1;
       updateCart();
     })
   );
 
-  // remove buttons
   document.querySelectorAll(".remove-btn").forEach((btn) =>
     btn.addEventListener("click", () => {
       const id = +btn.dataset.id;
@@ -405,29 +413,30 @@ function updateCart() {
 }
 
 // ======================
-// CART SIDEBAR CONTROL
+// CART PANEL
 // ======================
 cartBtn.onclick = () => cartSidebar.classList.add("show");
 closeCart.onclick = () => cartSidebar.classList.remove("show");
 
 // ======================
-// CHECKOUT VIA WHATSAPP
+// CHECKOUT WHATSAPP
 // ======================
 checkoutBtn.onclick = () => {
   if (cart.length === 0) {
     alert("Your cart is empty!");
     return;
   }
+
   let msg = "🛍️ *My Get&Buy Order:*\n\n";
+
   cart.forEach((i) => {
-    msg += `• ${i.name}${i.color ? ` (${i.color})` : ""} x ${
-      i.qty
-    } = AED ${i.price * i.qty}\n\n`;
+    msg += `• ${i.name}${i.color ? ` (${i.color})` : ""} x ${i.qty} = AED ${i.price * i.qty}\n\n`;
   });
+
   const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
+
   msg += `*Total:* AED ${total}\n\nName: `;
 
-  // YOUR NUMBER HERE
   window.open(
     `https://wa.me/971504238543?text=${encodeURIComponent(msg)}`,
     "_blank"
@@ -441,23 +450,93 @@ categoryBtns.forEach((btn) =>
   btn.addEventListener("click", () => {
     document.querySelector(".category-btn.active")?.classList.remove("active");
     btn.classList.add("active");
-    const cat = btn.dataset.category;
-    displayProducts(cat, currentSearch);
+    displayProducts(btn.dataset.category, currentSearch);
   })
 );
 
 // ======================
-// SEARCH FUNCTION
+// SEARCH SYSTEM
 // ======================
+searchInput.addEventListener("keyup", () => triggerSearch());
+searchBtn.addEventListener("click", () => triggerSearch());
+
 function triggerSearch() {
   const term = searchInput.value.trim();
   displayProducts(currentCategory, term);
 }
 
-searchInput.addEventListener("keyup", (e) => {
-  // live search as user types
-  triggerSearch();
-});
-searchBtn.addEventListener("click", () => {
-  triggerSearch();
+// =======================================================
+// 🔥 FLASH SALE SYSTEM
+// =======================================================
+function loadFlashDeals() {
+  const flash = PRODUCTS.sort(() => 0.5 - Math.random()).slice(0, 6);
+
+  flashSaleGrid.innerHTML = flash
+    .map(
+      (p) => `
+        <div class="flash-item">
+          <img src="${p.images[0]}" class="flash-thumb">
+
+          <video class="flash-video" muted loop>
+            <source src="${p.video}" type="video/mp4">
+          </video>
+
+          <p class="flash-name">${p.name}</p>
+          <p class="flash-price">AED ${p.price}</p>
+
+          <button class="flash-btn" onclick="openFlashProduct(${p.id})">
+            View
+          </button>
+
+          <button class="flash-buy-btn"
+            onclick="flashBuy(${p.id}, '${p.images[0]}', event)">
+            Buy
+          </button>
+        </div>
+      `
+    )
+    .join("");
+}
+
+// =============================
+// OPEN PRODUCT FROM FLASH (⭐ NEW)
+// =============================
+function openFlashProduct(id) {
+  cameFromFlash = true; // ⭐ track source
+
+  superSaleModal.classList.add("hidden");
+
+  setTimeout(() => {
+    viewProduct(id);
+  }, 150);
+}
+
+// =============================
+// BUY FROM FLASH DEALS
+// =============================
+function flashBuy(id, image, e) {
+  const product = PRODUCTS.find((p) => p.id === id);
+  if (!product) return;
+
+  if (product.colors.length > 0) {
+    openFlashProduct(id);
+    return;
+  }
+
+  addToCart(id, null, image, e, 1);
+}
+
+// =============================
+// FLASH SALE MODAL
+// =============================
+openSuperSaleBtn.onclick = () => {
+  loadFlashDeals();
+  superSaleModal.classList.remove("hidden");
+};
+
+closeSuperSale.onclick = () =>
+  superSaleModal.classList.add("hidden");
+
+superSaleModal.addEventListener("click", (e) => {
+  if (e.target === superSaleModal) superSaleModal.classList.add("hidden");
 });
