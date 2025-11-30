@@ -1,5 +1,6 @@
 // =======================================================
 // GET&BUY FULL SHOP SYSTEM WITH FLASH DEALS + RETURN TO FLASH
+// FIXED: FLASH MODAL VISIBILITY + SCROLL ISSUE
 // =======================================================
 
 // ======================
@@ -76,7 +77,7 @@ let selectedColor = null;
 let currentCategory = "all";
 let currentSearch = "";
 let modalQuantity = 1;
-let cameFromFlash = false; // ⭐ NEW FLAG
+let cameFromFlash = false;
 
 // ======================
 // DOM REFERENCES
@@ -188,12 +189,14 @@ function displayProducts(category = "all", searchTerm = "") {
 
 // ======================
 // VIEW PRODUCT MODAL
+// FIX: ADD BODY SCROLL LOCK
 // ======================
 function viewProduct(id) {
   const p = PRODUCTS.find((item) => item.id === id);
   if (!p) return;
 
   productView.classList.remove("hidden");
+  document.body.classList.add("modal-open"); // ⭐ FIX
 
   modalQuantity = 1;
   qtyCount.textContent = "1";
@@ -266,19 +269,20 @@ function viewProduct(id) {
 }
 
 // ======================
-// CLOSE PRODUCT MODAL (⭐ UPDATED)
+// CLOSE PRODUCT MODAL — FIX SCROLL LOCK
 // ======================
 function closeModal() {
   productView.classList.add("hidden");
+  document.body.classList.remove("modal-open"); // ⭐ FIX
 
   const vid = document.querySelector(".modal-left video.main-preview");
   if (vid) vid.remove();
   modalMainImage.style.display = "block";
 
-  // ⭐ If opened from Flash Deals → return to Flash Deals
   if (cameFromFlash) {
     cameFromFlash = false;
     superSaleModal.classList.remove("hidden");
+    document.body.classList.add("modal-open"); // ⭐ FIX
   }
 }
 
@@ -499,12 +503,13 @@ function loadFlashDeals() {
 }
 
 // =============================
-// OPEN PRODUCT FROM FLASH (⭐ NEW)
+// OPEN PRODUCT FROM FLASH — FIX BODY SCROLL
 // =============================
 function openFlashProduct(id) {
-  cameFromFlash = true; // ⭐ track source
+  cameFromFlash = true;
 
   superSaleModal.classList.add("hidden");
+  document.body.classList.remove("modal-open"); // ⭐ FIX
 
   setTimeout(() => {
     viewProduct(id);
@@ -527,16 +532,22 @@ function flashBuy(id, image, e) {
 }
 
 // =============================
-// FLASH SALE MODAL
+// FLASH SALE MODAL — FIX SCROLL
 // =============================
 openSuperSaleBtn.onclick = () => {
   loadFlashDeals();
   superSaleModal.classList.remove("hidden");
+  document.body.classList.add("modal-open"); // ⭐ FIX
 };
 
-closeSuperSale.onclick = () =>
+closeSuperSale.onclick = () => {
   superSaleModal.classList.add("hidden");
+  document.body.classList.remove("modal-open"); // ⭐ FIX
+};
 
 superSaleModal.addEventListener("click", (e) => {
-  if (e.target === superSaleModal) superSaleModal.classList.add("hidden");
+  if (e.target === superSaleModal) {
+    superSaleModal.classList.add("hidden");
+    document.body.classList.remove("modal-open"); // ⭐ FIX
+  }
 });
