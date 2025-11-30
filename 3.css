@@ -944,3 +944,59 @@ html, body {
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   }
 }
+
+/* ============================================================
+   FIX FOR FLASH SALE MODAL ON CP (VISIBLE + SCROLL WORKING)
+   ============================================================ */
+
+#super-sale-modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 !important;
+}
+
+.super-sale-box {
+  width: 100% !important;
+  max-width: 900px;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  overflow-y: auto !important;
+  padding: 15px !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
+
+/* Fix grid inside flash modal */
+.flash-sale-grid {
+  width: 100%;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+  gap: 12px !important;
+}
+
+/* Make flash sale items visible on CP */
+.flash-thumb,
+.flash-video {
+  height: 140px !important;
+}
+
+/* ============================================================
+   FIX SCROLL LOCK ISSUE WHEN MODALS OPEN
+   ============================================================ */
+
+body.modal-open {
+  overflow: hidden !important;
+}
+
+#product-view,
+#super-sale-modal {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* PRODUCT MODAL FIX (just visibility) */
+.lazada-modal {
+  max-height: 90vh;
+  overflow-y: auto !important;
+}
+
