@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>Get&Buy • Online Shop</title>
 
   <!-- Favicon -->
@@ -10,8 +10,7 @@
 
   <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet"
-        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
   <!-- Main CSS -->
   <link rel="stylesheet" href="3.css" />
@@ -60,8 +59,7 @@
 
         <div class="hero-text">
           <h1>Welcome to <span>Get&Buy</span></h1>
-          <p>Your online shop for premium <strong>bags, accessories & beauty products</strong>.
-             Fast delivery across Dubai.</p>
+          <p>Your online shop for premium <strong>bags, accessories & beauty products</strong>. Fast delivery across Dubai.</p>
 
           <div class="hero-badges">
             <span class="badge hot">🔥 Hot Deals</span>
@@ -86,34 +84,26 @@
 
     <!-- Category Buttons -->
     <section id="categories">
-      <button class="category-btn active" data-category="all">
-        <i class="fa fa-grid-2"></i> All
-      </button>
-      <button class="category-btn" data-category="accessories">
-        <i class="fa fa-gem"></i> Accessories
-      </button>
-      <button class="category-btn" data-category="bags">
-        <i class="fa fa-bag-shopping"></i> Bags
-      </button>
-      <button class="category-btn" data-category="Beuty product">
-        <i class="fa fa-spray-can-sparkles"></i> Beauty Product
-      </button>
+      <button class="category-btn active" data-category="all"><i class="fa fa-grid-2"></i> All</button>
+      <button class="category-btn" data-category="accessories"><i class="fa fa-gem"></i> Accessories</button>
+      <button class="category-btn" data-category="bags"><i class="fa fa-bag-shopping"></i> Bags</button>
+      <button class="category-btn" data-category="Beuty product"><i class="fa fa-spray-can-sparkles"></i> Beauty Product</button>
     </section>
 
     <!-- Product Grid -->
     <section id="products" class="product-grid"></section>
 
-    <!-- Lazada-style Product Detail Modal -->
-    <section id="product-view" class="hidden">
-      <div class="product-detail lazada-modal">
+    <!-- PRODUCT MODAL -->
+    <section id="product-view" class="hidden" aria-hidden="true">
+      <div class="product-detail lazada-modal" role="dialog" aria-modal="true">
         <button id="close-view" class="close-view-btn">✕</button>
 
         <div class="modal-left">
           <img id="modal-main-image" class="main-preview" src="" alt="Main Image">
           <div class="thumbnail-row">
-            <img id="thumb-0" class="thumb">
-            <img id="thumb-1" class="thumb">
-            <img id="thumb-2" class="thumb">
+            <img id="thumb-0" class="thumb" alt="Thumb 1">
+            <img id="thumb-1" class="thumb" alt="Thumb 2">
+            <img id="thumb-2" class="thumb" alt="Thumb 3">
             <video id="thumb-video" class="thumb" muted></video>
           </div>
         </div>
@@ -145,8 +135,8 @@
     </section>
 
     <!-- 🔥 SUPER SALE FLASH DEALS MODAL -->
-    <section id="super-sale-modal" class="hidden super-sale-overlay">
-      <div class="super-sale-box">
+    <section id="super-sale-modal" class="hidden super-sale-overlay" aria-hidden="true">
+      <div class="super-sale-box" role="dialog" aria-modal="true">
         <button id="close-super-sale" class="super-sale-close">✕</button>
         <h2 class="super-sale-title">🔥 Super Sale • Flash Deals</h2>
         <p class="super-sale-sub">Limited-time exclusive deals!</p>
@@ -156,7 +146,7 @@
     </section>
 
     <!-- Cart Sidebar -->
-    <aside id="cart">
+    <aside id="cart" aria-hidden="true">
       <div class="cart-content">
         <button id="close-cart">← Back</button>
         <h2>Your Cart</h2>
@@ -170,6 +160,15 @@
 
   <div id="fly-animation"></div>
   <audio id="add-cart-sound" src="add-to-cart.mp3"></audio>
+  <!-- ===========================
+     IMAGE ZOOM VIEWER (NEW)
+=========================== -->
+<div id="img-zoom" class="img-zoom hidden">
+  <button id="zoom-close" class="zoom-close" aria-label="Close zoom">&times;</button>
+  <img id="zoom-img" class="zoom-img" alt="Zoomed product image" />
+  <div class="zoom-hint">Scroll / Pinch to zoom • Drag to move • Double click to reset</div>
+</div>
+
 
   <!-- JS -->
   <script src="3.js"></script>
