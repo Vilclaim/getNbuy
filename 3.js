@@ -1,6 +1,7 @@
 // =======================================================
 // GET&BUY FULL SHOP SYSTEM WITH FLASH DEALS + RETURN TO FLASH
-// FIXED: FLASH MODAL VISIBILITY + SCROLL ISSUE
+// + IMAGE ZOOM VIEWER (CENTER FIX)
+// + FLASH BUTTONS ALWAYS VISIBLE (FIX)
 // =======================================================
 
 // ======================
@@ -66,6 +67,16 @@ const PRODUCTS = [
     images: ["Max diet.jpg", "images/backpack2.jpg", "images/backpack3.jpg"],
     video: "videos/backpack.mp4",
     colors: []
+  },
+  {
+    id: 7,
+    name: "Coash",
+    price: 300,
+    category: "bags",
+    description: "Coach bag perfect for work, brunch, travel, or special occasions.",
+    images: ["coach1.jpeg", "coach2.jpeg", ""],
+    video: "videos/backpack.mp4",
+    colors: ["Light Brown", ""]
   }
 ];
 
@@ -189,14 +200,13 @@ function displayProducts(category = "all", searchTerm = "") {
 
 // ======================
 // VIEW PRODUCT MODAL
-// FIX: ADD BODY SCROLL LOCK
 // ======================
 function viewProduct(id) {
   const p = PRODUCTS.find((item) => item.id === id);
   if (!p) return;
 
   productView.classList.remove("hidden");
-  document.body.classList.add("modal-open"); // ⭐ FIX
+  document.body.classList.add("modal-open");
 
   modalQuantity = 1;
   qtyCount.textContent = "1";
@@ -211,30 +221,37 @@ function viewProduct(id) {
   thumb2.src = p.images[2];
   thumbVideo.src = p.video;
 
+  const removeOldVid = () => {
+    const oldVid = document.querySelector(".modal-left video.main-preview");
+    if (oldVid) oldVid.remove();
+  };
+
   thumb0.onclick = () => {
+    removeOldVid();
     modalMainImage.src = p.images[0];
     modalMainImage.style.display = "block";
   };
   thumb1.onclick = () => {
+    removeOldVid();
     modalMainImage.src = p.images[1];
     modalMainImage.style.display = "block";
   };
   thumb2.onclick = () => {
+    removeOldVid();
     modalMainImage.src = p.images[2];
     modalMainImage.style.display = "block";
   };
 
   thumbVideo.onclick = () => {
     modalMainImage.style.display = "none";
+
     const videoEl = document.createElement("video");
     videoEl.src = p.video;
     videoEl.controls = true;
     videoEl.autoplay = true;
     videoEl.className = "main-preview";
 
-    const oldVid = document.querySelector(".modal-left video.main-preview");
-    if (oldVid) oldVid.remove();
-
+    removeOldVid();
     document.querySelector(".modal-left").appendChild(videoEl);
   };
 
@@ -244,6 +261,7 @@ function viewProduct(id) {
   if (p.colors.length > 0) {
     colorSection.classList.remove("hidden");
     p.colors.forEach((color) => {
+      if (!color) return;
       const opt = document.createElement("div");
       opt.className = "color-option";
       opt.textContent = color;
@@ -269,11 +287,11 @@ function viewProduct(id) {
 }
 
 // ======================
-// CLOSE PRODUCT MODAL — FIX SCROLL LOCK
+// CLOSE PRODUCT MODAL
 // ======================
 function closeModal() {
   productView.classList.add("hidden");
-  document.body.classList.remove("modal-open"); // ⭐ FIX
+  document.body.classList.remove("modal-open");
 
   const vid = document.querySelector(".modal-left video.main-preview");
   if (vid) vid.remove();
@@ -282,7 +300,7 @@ function closeModal() {
   if (cameFromFlash) {
     cameFromFlash = false;
     superSaleModal.classList.remove("hidden");
-    document.body.classList.add("modal-open"); // ⭐ FIX
+    document.body.classList.add("modal-open");
   }
 }
 
@@ -314,9 +332,7 @@ function addToCart(id, color, image, e, qty = 1) {
   if (!product) return;
 
   const keyColor = color || "none";
-  const existing = cart.find(
-    (i) => i.id === id && (i.color || "none") === keyColor
-  );
+  const existing = cart.find((i) => i.id === id && (i.color || "none") === keyColor);
 
   if (existing) existing.qty += qty;
   else cart.push({ ...product, color, qty });
@@ -332,6 +348,8 @@ function addToCart(id, color, image, e, qty = 1) {
 // ADD FLY ANIMATION
 // ======================
 function animateFly(imgSrc, e) {
+  if (!flyAnimation) return;
+
   const img = document.createElement("img");
   img.src = imgSrc;
   flyAnimation.appendChild(img);
@@ -340,8 +358,15 @@ function animateFly(imgSrc, e) {
   const startX = e?.clientX ?? window.innerWidth / 2;
   const startY = e?.clientY ?? window.innerHeight / 2;
 
+  img.style.position = "fixed";
+  img.style.width = "60px";
+  img.style.height = "60px";
+  img.style.objectFit = "cover";
+  img.style.borderRadius = "12px";
   img.style.left = startX + "px";
   img.style.top = startY + "px";
+  img.style.zIndex = "99999";
+  img.style.transition = "all .85s ease";
 
   setTimeout(() => {
     img.style.left = rect.left + "px";
@@ -351,11 +376,6 @@ function animateFly(imgSrc, e) {
   }, 10);
 
   setTimeout(() => img.remove(), 900);
-
-  cartCount.style.animation = "popBadge 0.3s";
-  cartCount.addEventListener("animationend", () => {
-    cartCount.style.animation = "";
-  }, { once: true });
 }
 
 // ======================
@@ -393,9 +413,7 @@ function updateCart() {
       const delta = +btn.dataset.delta;
       const color = btn.dataset.color || null;
 
-      const item = cart.find(
-        (i) => i.id === id && (i.color || "none") === (color || "none")
-      );
+      const item = cart.find((i) => i.id === id && (i.color || "none") === (color || "none"));
       if (!item) return;
 
       item.qty += delta;
@@ -408,19 +426,23 @@ function updateCart() {
     btn.addEventListener("click", () => {
       const id = +btn.dataset.id;
       const color = btn.dataset.color || null;
-      cart = cart.filter(
-        (i) => !(i.id === id && (i.color || "none") === (color || "none"))
-      );
+      cart = cart.filter((i) => !(i.id === id && (i.color || "none") === (color || "none")));
       updateCart();
     })
   );
 }
 
 // ======================
-// CART PANEL
-// ======================
-cartBtn.onclick = () => cartSidebar.classList.add("show");
-closeCart.onclick = () => cartSidebar.classList.remove("show");
+// CART PANEL (add scroll lock)
+ // ======================
+cartBtn.onclick = () => {
+  cartSidebar.classList.add("show");
+  document.body.classList.add("modal-open");
+};
+closeCart.onclick = () => {
+  cartSidebar.classList.remove("show");
+  document.body.classList.remove("modal-open");
+};
 
 // ======================
 // CHECKOUT WHATSAPP
@@ -432,19 +454,14 @@ checkoutBtn.onclick = () => {
   }
 
   let msg = "🛍️ *My Get&Buy Order:*\n\n";
-
   cart.forEach((i) => {
     msg += `• ${i.name}${i.color ? ` (${i.color})` : ""} x ${i.qty} = AED ${i.price * i.qty}\n\n`;
   });
 
   const total = cart.reduce((sum, i) => sum + i.price * i.qty, 0);
-
   msg += `*Total:* AED ${total}\n\nName: `;
 
-  window.open(
-    `https://wa.me/971504238543?text=${encodeURIComponent(msg)}`,
-    "_blank"
-  );
+  window.open(`https://wa.me/971504238543?text=${encodeURIComponent(msg)}`, "_blank");
 };
 
 // ======================
@@ -470,55 +487,38 @@ function triggerSearch() {
 }
 
 // =======================================================
-// 🔥 FLASH SALE SYSTEM
+// 🔥 FLASH SALE SYSTEM (FIXED BUTTON VISIBILITY)
 // =======================================================
 function loadFlashDeals() {
-  const flash = PRODUCTS.sort(() => 0.5 - Math.random()).slice(0, 6);
+  const flash = [...PRODUCTS].sort(() => 0.5 - Math.random()).slice(0, 6);
 
-  flashSaleGrid.innerHTML = flash
-    .map(
-      (p) => `
-        <div class="flash-item">
-          <img src="${p.images[0]}" class="flash-thumb">
+  flashSaleGrid.innerHTML = flash.map((p) => `
+    <div class="flash-item">
+      <img src="${p.images[0]}" class="flash-thumb" alt="${p.name}">
 
-          <video class="flash-video" muted loop>
-            <source src="${p.video}" type="video/mp4">
-          </video>
+      <video class="flash-video" muted loop>
+        <source src="${p.video}" type="video/mp4">
+      </video>
 
-          <p class="flash-name">${p.name}</p>
-          <p class="flash-price">AED ${p.price}</p>
+      <p class="flash-name">${p.name}</p>
+      <p class="flash-price">AED ${p.price}</p>
 
-          <button class="flash-btn" onclick="openFlashProduct(${p.id})">
-            View
-          </button>
-
-          <button class="flash-buy-btn"
-            onclick="flashBuy(${p.id}, '${p.images[0]}', event)">
-            Buy
-          </button>
-        </div>
-      `
-    )
-    .join("");
+      <!-- ✅ NEW: buttons pinned to bottom -->
+      <div class="flash-actions">
+        <button class="flash-btn" onclick="openFlashProduct(${p.id})">View</button>
+        <button class="flash-buy-btn" onclick="flashBuy(${p.id}, '${p.images[0]}', event)">Buy</button>
+      </div>
+    </div>
+  `).join("");
 }
 
-// =============================
-// OPEN PRODUCT FROM FLASH — FIX BODY SCROLL
-// =============================
 function openFlashProduct(id) {
   cameFromFlash = true;
-
   superSaleModal.classList.add("hidden");
-  document.body.classList.remove("modal-open"); // ⭐ FIX
-
-  setTimeout(() => {
-    viewProduct(id);
-  }, 150);
+  document.body.classList.remove("modal-open");
+  setTimeout(() => viewProduct(id), 150);
 }
 
-// =============================
-// BUY FROM FLASH DEALS
-// =============================
 function flashBuy(id, image, e) {
   const product = PRODUCTS.find((p) => p.id === id);
   if (!product) return;
@@ -531,23 +531,174 @@ function flashBuy(id, image, e) {
   addToCart(id, null, image, e, 1);
 }
 
-// =============================
-// FLASH SALE MODAL — FIX SCROLL
-// =============================
 openSuperSaleBtn.onclick = () => {
   loadFlashDeals();
   superSaleModal.classList.remove("hidden");
-  document.body.classList.add("modal-open"); // ⭐ FIX
+  document.body.classList.add("modal-open");
 };
 
 closeSuperSale.onclick = () => {
   superSaleModal.classList.add("hidden");
-  document.body.classList.remove("modal-open"); // ⭐ FIX
+  document.body.classList.remove("modal-open");
 };
 
 superSaleModal.addEventListener("click", (e) => {
   if (e.target === superSaleModal) {
     superSaleModal.classList.add("hidden");
-    document.body.classList.remove("modal-open"); // ⭐ FIX
+    document.body.classList.remove("modal-open");
   }
+});
+
+// =======================================================
+// IMAGE ZOOM VIEWER (CENTER FIX)
+// =======================================================
+const zoomOverlay = document.getElementById("img-zoom");
+const zoomImg = document.getElementById("zoom-img");
+const zoomClose = document.getElementById("zoom-close");
+
+let zoomScale = 1;
+let zoomX = 0;
+let zoomY = 0;
+let isDragging = false;
+let startX = 0;
+let startY = 0;
+
+let pinchStartDist = 0;
+let pinchStartScale = 1;
+
+function applyZoomTransform() {
+  zoomImg.style.transform = `translate3d(${zoomX}px, ${zoomY}px, 0) scale(${zoomScale})`;
+}
+
+function resetZoom() {
+  zoomScale = 1;
+  zoomX = 0;
+  zoomY = 0;
+  zoomImg.style.transformOrigin = "center center";
+  applyZoomTransform();
+}
+
+function openZoom(src, altText = "Zoomed image") {
+  if (!src) return;
+  zoomImg.src = src;
+  zoomImg.alt = altText;
+
+  zoomOverlay.classList.remove("hidden");
+  document.body.classList.add("modal-open");
+  resetZoom();
+}
+
+function closeZoom() {
+  zoomOverlay.classList.add("hidden");
+  zoomImg.src = "";
+  resetZoom();
+  document.body.classList.remove("modal-open");
+}
+
+zoomClose.addEventListener("click", closeZoom);
+zoomOverlay.addEventListener("click", (e) => {
+  if (e.target === zoomOverlay) closeZoom();
+});
+
+document.addEventListener("keydown", (e) => {
+  if (!zoomOverlay.classList.contains("hidden") && e.key === "Escape") closeZoom();
+});
+
+// Wheel zoom
+zoomImg.addEventListener("wheel", (e) => {
+  e.preventDefault();
+  const delta = Math.sign(e.deltaY);
+  const step = 0.12;
+
+  zoomScale = delta > 0 ? zoomScale - step : zoomScale + step;
+  zoomScale = Math.min(Math.max(zoomScale, 1), 4);
+
+  if (zoomScale === 1) {
+    zoomX = 0;
+    zoomY = 0;
+  }
+  applyZoomTransform();
+}, { passive: false });
+
+// Drag to move
+zoomImg.addEventListener("mousedown", (e) => {
+  if (zoomScale <= 1) return;
+  isDragging = true;
+  startX = e.clientX - zoomX;
+  startY = e.clientY - zoomY;
+});
+
+window.addEventListener("mousemove", (e) => {
+  if (!isDragging) return;
+  zoomX = e.clientX - startX;
+  zoomY = e.clientY - startY;
+  applyZoomTransform();
+});
+
+window.addEventListener("mouseup", () => {
+  isDragging = false;
+});
+
+// Double click reset / zoom
+zoomImg.addEventListener("dblclick", () => {
+  if (zoomScale > 1) resetZoom();
+  else {
+    zoomScale = 2.2;
+    zoomX = 0;
+    zoomY = 0;
+    applyZoomTransform();
+  }
+});
+
+// Touch drag + pinch
+zoomImg.addEventListener("touchstart", (e) => {
+  if (e.touches.length === 1) {
+    if (zoomScale <= 1) return;
+    isDragging = true;
+    startX = e.touches[0].clientX - zoomX;
+    startY = e.touches[0].clientY - zoomY;
+  }
+
+  if (e.touches.length === 2) {
+    isDragging = false;
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    pinchStartDist = Math.hypot(dx, dy);
+    pinchStartScale = zoomScale;
+  }
+}, { passive: true });
+
+zoomImg.addEventListener("touchmove", (e) => {
+  if (e.touches.length === 1 && isDragging) {
+    zoomX = e.touches[0].clientX - startX;
+    zoomY = e.touches[0].clientY - startY;
+    applyZoomTransform();
+  }
+
+  if (e.touches.length === 2) {
+    e.preventDefault();
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const dist = Math.hypot(dx, dy);
+
+    const ratio = dist / pinchStartDist;
+    zoomScale = pinchStartScale * ratio;
+    zoomScale = Math.min(Math.max(zoomScale, 1), 4);
+
+    if (zoomScale === 1) {
+      zoomX = 0;
+      zoomY = 0;
+    }
+    applyZoomTransform();
+  }
+}, { passive: false });
+
+zoomImg.addEventListener("touchend", () => {
+  isDragging = false;
+});
+
+// Connect main modal image click => zoom
+modalMainImage.addEventListener("click", () => {
+  if (modalMainImage.style.display === "none") return;
+  openZoom(modalMainImage.src, viewTitle?.textContent || "Product image");
 });
