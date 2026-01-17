@@ -145,16 +145,22 @@
       </div>
     </section>
 
-    <!-- Cart Sidebar -->
+        <!-- Cart Sidebar -->
     <aside id="cart" aria-hidden="true">
       <div class="cart-content">
         <button id="close-cart">← Back</button>
         <h2>Your Cart</h2>
+
         <ul id="cart-items"></ul>
-        <p id="cart-total">Total: AED 0</p>
-        <button id="checkout"><i class="fa fa-whatsapp"></i> Proceed to Checkout</button>
+
+        <!-- ✅ NEW: sticky footer so total + checkout always visible -->
+        <div class="cart-footer">
+          <p id="cart-total">Total: AED 0</p>
+          <button id="checkout"><i class="fa fa-whatsapp"></i> Proceed to Checkout</button>
+        </div>
       </div>
     </aside>
+
 
   </main>
 
