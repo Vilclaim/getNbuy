@@ -732,6 +732,25 @@ main{
   width:100%;
 }
 
+
+.cart-content{
+  min-height: 0; 
+}
+
+#cart-items{
+  min-height: 0; 
+}
+
+
+.cart-footer{
+  position: sticky;
+  bottom: 0;
+  padding-top: 10px;
+  background: linear-gradient(180deg, rgba(20,20,20,0), rgba(5,5,5,0.95));
+  backdrop-filter: blur(10px);
+}
+
+
 /* ================= IMAGE ZOOM VIEWER (CENTER FIX) ================= */
 .zoom-close{
   position: absolute;
