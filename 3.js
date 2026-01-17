@@ -433,8 +433,8 @@ function updateCart() {
 }
 
 // ======================
-// CART PANEL (add scroll lock)
- // ======================
+// CART PANEL
+// ======================
 cartBtn.onclick = () => {
   cartSidebar.classList.add("show");
   document.body.classList.add("modal-open");
@@ -487,7 +487,7 @@ function triggerSearch() {
 }
 
 // =======================================================
-// 🔥 FLASH SALE SYSTEM (FIXED BUTTON VISIBILITY)
+// 🔥 FLASH SALE SYSTEM
 // =======================================================
 function loadFlashDeals() {
   const flash = [...PRODUCTS].sort(() => 0.5 - Math.random()).slice(0, 6);
@@ -503,7 +503,6 @@ function loadFlashDeals() {
       <p class="flash-name">${p.name}</p>
       <p class="flash-price">AED ${p.price}</p>
 
-      <!-- ✅ NEW: buttons pinned to bottom -->
       <div class="flash-actions">
         <button class="flash-btn" onclick="openFlashProduct(${p.id})">View</button>
         <button class="flash-buy-btn" onclick="flashBuy(${p.id}, '${p.images[0]}', event)">Buy</button>
@@ -550,7 +549,7 @@ superSaleModal.addEventListener("click", (e) => {
 });
 
 // =======================================================
-// IMAGE ZOOM VIEWER (CENTER FIX)
+// IMAGE ZOOM VIEWER
 // =======================================================
 const zoomOverlay = document.getElementById("img-zoom");
 const zoomImg = document.getElementById("zoom-img");
